@@ -3,230 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI 雙向全語言翻譯對照</title>
+    <title>AI 高精準翻譯對照</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
-        body { -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        .soft-ui { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .lang-select { -webkit-appearance: none; appearance: none; background: transparent; padding-right: 20px; }
-        textarea { font-size: 16px !important; }
-        .loading-shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        body { -webkit-tap-highlight-color: transparent; background: #f9fafb; }
+        .editor-container { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.5rem; transition: all 0.3s ease; }
+        .editor-container:focus-within { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .lang-select { appearance: none; background: transparent; cursor: pointer; border: none; font-weight: 800; color: #1e293b; outline: none; }
+        textarea { font-size: 16px !important; resize: none; color: #334155; }
+        .shimmer-active { background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
-<body class="bg-[#f8f9fa] min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
-    <header class="bg-white border-b px-4 py-3 sticky top-0 z-50 flex justify-between items-center shadow-sm">
+    <nav class="bg-white/80 backdrop-blur-md border-b px-6 py-4 sticky top-0 z-50 flex justify-between items-center shadow-sm">
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">譯</div>
-            <span class="font-bold text-gray-800">全語言對照工具</span>
+            <div class="bg-blue-600 text-white p-1.5 rounded-lg font-black text-xl">文</div>
+            <h1 class="font-bold text-slate-800 tracking-tight">精準翻譯對照</h1>
         </div>
-        <div id="status" class="text-[9px] font-black text-gray-400 border px-2 py-1 rounded-md uppercase tracking-widest">Ready</div>
-    </header>
+        <div id="status" class="text-[10px] font-black text-blue-500 bg-blue-50 px-2 py-1 rounded">系統就緒</div>
+    </nav>
 
-    <main class="flex-1 p-4 max-w-7xl mx-auto w-full flex flex-col gap-4">
+    <main class="flex-1 p-4 lg:p-6 max-w-7xl mx-auto w-full flex flex-col gap-4">
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 items-center">
-            <div class="soft-ui rounded-xl p-3 flex items-center relative">
-                <select id="srcLang" class="lang-select w-full font-bold text-slate-600 outline-none text-sm cursor-pointer">
-                    <option value="auto">自動偵測 (Detect)</option>
-                    <option value="zh-TW" selected>繁體中文 (Traditional Chinese)</option>
-                    <option value="zh-CN">簡體中文 (Simplified Chinese)</option>
-                    <option value="en">英文 (English)</option>
-                    <option value="ja">日文 (Japanese)</option>
-                    <option value="ko">韓文 (Korean)</option>
-                    <option value="th">泰文 (Thai)</option>
-                    <option value="vi">越南文 (Vietnamese)</option>
-                    <option value="fr">法文 (French)</option>
-                    <option value="de">德文 (German)</option>
-                    <option value="es">西班牙文 (Spanish)</option>
-                </select>
-                <div class="absolute right-3 pointer-events-none text-gray-400">▼</div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4 items-center relative">
+            <div class="editor-container p-4 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-black text-slate-300 italic">FROM</span>
+                    <select id="srcLang" class="lang-select text-sm lg:text-base"></select>
+                </div>
+                <div class="text-slate-300 text-xs">▼</div>
             </div>
 
-            <div class="md:hidden flex justify-center">
-                <button onclick="swapLanguages()" class="p-2 bg-white rounded-full shadow-sm border text-blue-600 active:rotate-180 transition-transform">⇄</button>
-            </div>
+            <button onclick="swapLangs()" class="lg:absolute lg:left-1/2 lg:-translate-x-1/2 z-10 bg-white p-2.5 rounded-full border shadow-sm text-blue-600 hover:bg-blue-50 active:scale-90 transition-all mx-auto">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            </button>
 
-            <div class="soft-ui rounded-xl p-3 flex items-center relative">
-                <select id="targetLang" class="lang-select w-full font-bold text-blue-600 outline-none text-sm cursor-pointer">
-                    <option value="zh-TW" selected>繁體中文 (Traditional Chinese)</option>
-                    <option value="en">英文 (English)</option>
-                    <option value="ja">日文 (Japanese)</option>
-                    <option value="ko">韓文 (Korean)</option>
-                    <option value="zh-CN">簡體中文 (Simplified Chinese)</option>
-                    <option value="th">泰文 (Thai)</option>
-                    <option value="vi">越南文 (Vietnamese)</option>
-                    <option value="ms">馬來文 (Malay)</option>
-                    <option value="id">印尼文 (Indonesian)</option>
-                    <option value="fr">法文 (French)</option>
-                    <option value="de">德文 (German)</option>
-                    <option value="it">義大利文 (Italian)</option>
-                    <option value="es">西班牙文 (Spanish)</option>
-                    <option value="pt">葡萄牙文 (Portuguese)</option>
-                    <option value="ru">俄文 (Russian)</option>
-                    <option value="ar">阿拉伯文 (Arabic)</option>
-                    <option value="tr">土耳其文 (Turkish)</option>
-                </select>
-                <div class="absolute right-3 pointer-events-none text-blue-400">▼</div>
+            <div class="editor-container p-4 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-black text-blue-400 italic">TO</span>
+                    <select id="targetLang" class="lang-select text-sm lg:text-base !text-blue-600"></select>
+                </div>
+                <div class="text-blue-300 text-xs">▼</div>
             </div>
         </div>
 
-        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4">
             
-            <div id="dropZone" class="bg-white rounded-3xl shadow-sm border border-gray-200 flex flex-col relative overflow-hidden min-h-[300px]">
-                <textarea id="inputText" class="flex-1 p-6 outline-none resize-none text-gray-800 leading-relaxed bg-transparent" placeholder="輸入文字或將圖片拖進這裡..."></textarea>
+            <div id="dropZone" class="editor-container flex flex-col relative min-h-[350px] overflow-hidden">
+                <textarea id="inputText" class="flex-1 p-6 outline-none leading-relaxed" placeholder="請輸入欲翻譯的文字，或直接拖曳圖片進行高精準辨識..."></textarea>
                 
-                <div id="ocrLoader" class="hidden absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center space-y-3">
-                    <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-xs font-black text-blue-600 tracking-widest">圖片辨識中...</p>
+                <div id="ocrOverlay" class="hidden absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center gap-4">
+                    <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-xs font-black text-blue-600 tracking-widest uppercase">OCR 精準辨識中</p>
                 </div>
 
-                <div class="p-4 bg-gray-50 flex justify-between items-center border-t border-gray-100">
-                    <div class="flex gap-4">
-                        <label for="fileInput" class="p-2 text-gray-400 hover:text-blue-600 cursor-pointer transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <div class="p-3 bg-slate-50 border-t flex justify-between items-center">
+                    <div class="flex gap-2">
+                        <label for="fileInput" class="p-2 bg-white border rounded-xl cursor-pointer hover:bg-blue-50 transition-colors">
+                            <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"></path></svg>
                         </label>
                         <input type="file" id="fileInput" class="hidden" accept="image/*">
                     </div>
-                    <button onclick="clearAll()" class="text-xs font-bold text-gray-400 hover:text-red-500">清除</button>
+                    <button onclick="clearAll()" class="text-xs font-black text-slate-400 hover:text-red-500 px-4">清空</button>
                 </div>
             </div>
 
-            <div id="outputCard" class="bg-white rounded-3xl shadow-sm border border-blue-50 flex flex-col relative overflow-hidden min-h-[300px]">
-                <div id="transLoader" class="hidden absolute inset-0 loading-shimmer z-10 opacity-60"></div>
+            <div id="outputCard" class="editor-container flex flex-col relative min-h-[350px] overflow-hidden bg-blue-50/10 border-blue-100">
+                <div id="transLoader" class="hidden absolute inset-0 shimmer-active z-10 opacity-50"></div>
                 
-                <div id="placeholder" class="flex-1 flex flex-col items-center justify-center text-gray-300 p-10">
-                    <p class="text-sm font-medium">翻譯結果</p>
+                <div id="placeholder" class="flex-1 flex flex-col items-center justify-center p-12 text-slate-300">
+                    <p class="text-sm font-bold uppercase tracking-widest italic opacity-50">譯文對照區域</p>
                 </div>
-                
-                <div id="resultContent" class="hidden flex-1 flex flex-col p-6">
+
+                <div id="resultArea" class="hidden flex-1 flex flex-col p-6 overflow-y-auto">
                     <div class="flex justify-between items-center mb-4">
-                        <span class="text-[10px] font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-full uppercase">Translated</span>
-                        <button onclick="copyResult()" class="text-xs font-black text-blue-600 hover:underline">複製</button>
+                        <span class="text-[10px] font-black text-blue-600 bg-blue-100 px-2 py-0.5 rounded">譯文</span>
+                        <button onclick="copyRes()" class="text-xs font-bold text-blue-600 hover:underline">複製內容</button>
                     </div>
-                    <div id="outputText" class="flex-1 text-gray-800 text-xl leading-relaxed whitespace-pre-wrap"></div>
-                    <div class="mt-8 pt-4 border-t border-dashed border-gray-100">
-                        <p class="text-[9px] font-black text-gray-300 uppercase mb-2">原文對照</p>
-                        <p id="originalRef" class="text-xs text-gray-300 italic line-clamp-3"></p>
+                    <div id="outputText" class="text-slate-800 text-xl leading-relaxed whitespace-pre-wrap font-medium"></div>
+                    <div class="mt-8 pt-6 border-t border-dashed border-slate-200">
+                        <p class="text-[9px] font-black text-slate-300 uppercase mb-2">原文快照</p>
+                        <p id="originalRef" class="text-xs text-slate-400 italic line-clamp-4 leading-loose"></p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <button id="transBtn" onclick="runTranslation()" class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white py-5 rounded-3xl font-black text-lg shadow-xl shadow-blue-100 transition-all active:scale-[0.98]">
-            立即翻譯
+        <button id="transBtn" onclick="executeTranslation()" class="w-full bg-slate-900 hover:bg-black text-white py-5 rounded-2xl font-black text-lg shadow-xl active:scale-[0.98] transition-all">
+            執行高精準翻譯
         </button>
 
     </main>
 
     <script>
-        const inputField = document.getElementById('inputText');
-        const fileInput = document.getElementById('fileInput');
-        const ocrLoader = document.getElementById('ocrLoader');
-        const transLoader = document.getElementById('transLoader');
-        const status = document.getElementById('status');
+        const langs = [
+            {v: "auto", n: "自動偵測 (Detect)"},
+            {v: "zh-TW", n: "繁體中文"},
+            {v: "zh-CN", n: "簡體中文"},
+            {v: "en", n: "英文 (English)"},
+            {v: "ja", n: "日文 (Japanese)"},
+            {v: "ko", n: "韓文 (Korean)"},
+            {v: "th", n: "泰文 (Thai)"},
+            {v: "vi", n: "越南文 (Vietnamese)"},
+            {v: "ms", n: "馬來文"},
+            {v: "fr", n: "法文"},
+            {v: "de", n: "德文"},
+            {v: "it", n: "義大利文"},
+            {v: "es", n: "西班牙文"}
+        ];
 
-        // 1. 語言交換功能
-        function swapLanguages() {
-            const srcSelect = document.getElementById('srcLang');
-            const targetSelect = document.getElementById('targetLang');
-            const tempValue = srcSelect.value;
-            
-            // 如果左邊是自動偵測，交換後將左邊設為右邊目前的，右邊設為繁中
-            if(tempValue === 'auto') {
-                srcSelect.value = targetSelect.value;
-                targetSelect.value = 'zh-TW';
-            } else {
-                srcSelect.value = targetSelect.value;
-                targetSelect.value = tempValue;
-            }
+        const srcS = document.getElementById('srcLang');
+        const tarS = document.getElementById('targetLang');
+
+        // 初始化
+        langs.forEach(l => {
+            srcS.add(new Option(l.n, l.v));
+            if(l.v !== 'auto') tarS.add(new Option(l.n, l.v));
+        });
+        srcS.value = "zh-TW";
+        tarS.value = "zh-TW";
+
+        function swapLangs() {
+            if(srcS.value === 'auto') return;
+            const t = srcS.value;
+            srcS.value = tarS.value;
+            tarS.value = t;
         }
 
-        // 2. 拖曳圖片處理
-        const dropZone = document.getElementById('dropZone');
-        ['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, (ev) => {
-            ev.preventDefault();
-            dropZone.classList.add('border-blue-500', 'bg-blue-50/10');
-        }));
-        ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => {
-            ev.preventDefault();
-            dropZone.classList.remove('border-blue-500', 'bg-blue-50/10');
-        }));
-        dropZone.addEventListener('drop', (e) => {
-            const file = e.dataTransfer.files[0];
-            if(file && file.type.startsWith('image/')) handleOCR(file);
+        // OCR 處理
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const f = e.target.files[0];
+            if(!f) return;
+            document.getElementById('ocrOverlay').classList.remove('hidden');
+            try {
+                // 加載多國語言辨識引擎，確保精準度
+                const worker = await Tesseract.createWorker('chi_tra+chi_sim+eng+jpn+kor');
+                const { data: { text } } = await worker.recognize(f);
+                await worker.terminate();
+                document.getElementById('inputText').value = text.replace(/\s+/g, ' ').trim();
+            } finally {
+                document.getElementById('ocrOverlay').classList.add('hidden');
+            }
         });
 
-        fileInput.addEventListener('change', (e) => handleOCR(e.target.files[0]));
+        // 翻譯核心
+        async function executeTranslation() {
+            const txt = document.getElementById('inputText').value.trim();
+            if(!txt) return;
 
-        // 3. OCR 核心
-        async function handleOCR(file) {
-            if (!file) return;
-            ocrLoader.classList.remove('hidden');
-            status.innerText = "OCR_RUNNING";
-            try {
-                // 加載中/英/日/韓辨識庫
-                const worker = await Tesseract.createWorker('chi_tra+chi_sim+eng+jpn+kor');
-                const { data: { text } } = await worker.recognize(file);
-                await worker.terminate();
-                inputField.value = text;
-            } catch (err) {
-                alert("圖片解析出錯");
-            } finally {
-                ocrLoader.classList.add('hidden');
-                status.innerText = "READY";
-            }
-        }
-
-        // 4. 翻譯主程序
-        async function runTranslation() {
-            const text = inputField.value.trim();
-            const sl = document.getElementById('srcLang').value;
-            const tl = document.getElementById('targetLang').value;
+            const loader = document.getElementById('transLoader');
             const btn = document.getElementById('transBtn');
-
-            if (!text) return;
-
+            
             btn.disabled = true;
-            transLoader.classList.remove('hidden');
-            status.innerText = "TRANSLATING";
+            loader.classList.remove('hidden');
 
             try {
-                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${srcS.value}&tl=${tarS.value}&dt=t&q=${encodeURIComponent(txt)}`;
                 const res = await fetch(url);
                 const data = await res.json();
-                
-                const resultText = data[0].map(item => item[0]).join('');
-                
-                document.getElementById('placeholder').classList.add('hidden');
-                document.getElementById('resultContent').classList.remove('hidden');
-                document.getElementById('outputText').innerText = resultText;
-                document.getElementById('originalRef').innerText = text;
-                status.innerText = "SUCCESS";
+                const result = data[0].map(i => i[0]).join('');
 
-                if (window.innerWidth < 768) {
-                    document.getElementById('outputCard').scrollIntoView({ behavior: 'smooth' });
-                }
-            } catch (err) {
-                status.innerText = "FAILED";
-                alert("翻譯引擎暫時繁忙");
+                document.getElementById('placeholder').classList.add('hidden');
+                document.getElementById('resultArea').classList.remove('hidden');
+                document.getElementById('outputText').innerText = result;
+                document.getElementById('originalRef').innerText = txt;
+
+                if(window.innerWidth < 1024) document.getElementById('outputCard').scrollIntoView({behavior: 'smooth'});
+            } catch(e) {
+                alert("翻譯引擎暫時斷線");
             } finally {
                 btn.disabled = false;
-                transLoader.classList.add('hidden');
+                loader.classList.add('hidden');
             }
         }
 
         function clearAll() {
-            inputField.value = "";
-            document.getElementById('resultContent').classList.add('hidden');
+            document.getElementById('inputText').value = "";
+            document.getElementById('resultArea').classList.add('hidden');
             document.getElementById('placeholder').classList.remove('hidden');
         }
 
-        function copyResult() {
+        function copyRes() {
             navigator.clipboard.writeText(document.getElementById('outputText').innerText);
-            alert("已複製譯文");
+            alert("譯文已複製");
         }
     </script>
 </body>
