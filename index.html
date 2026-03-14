@@ -14,7 +14,7 @@
         textarea { font-size: 1.3rem !important; line-height: 1.8; background: transparent; border: none; outline: none; width: 100%; min-height: 300px; padding: 0 !important; }
         .recording-pulse { background: #ef4444 !important; color: white !important; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
-        .quick-btn { padding: 0.75rem 1.25rem; border-radius: 1rem; font-weight: 800; font-size: 0.9rem; transition: all 0.2s; border: 2px solid #e2e8f0; background: white; display: flex; flex-direction: column; align-items: center; min-width: 120px; }
+        .quick-btn { padding: 0.75rem 1rem; border-radius: 1rem; font-weight: 800; font-size: 0.9rem; transition: all 0.2s; border: 2px solid #e2e8f0; background: white; display: flex; flex-direction: column; align-items: center; min-width: 110px; }
         .quick-btn.active { background: #1e293b; color: white; border-color: #1e293b; }
         
         #searchModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 100; padding: 1.5rem; }
@@ -23,7 +23,6 @@
         .lang-list { flex: 1; overflow-y: auto; padding: 1rem; }
         .lang-item { padding: 1rem 1.5rem; border-radius: 1rem; margin-bottom: 0.5rem; cursor: pointer; transition: background 0.2s; font-weight: 600; display: flex; justify-content: space-between; }
         .lang-item:active { background: #f0f4f8; }
-        .lang-item span { color: #94a3b8; font-size: 0.8rem; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col max-w-7xl mx-auto w-full">
@@ -31,30 +30,18 @@
     <header class="w-full mb-4 px-4 pt-4">
         <div class="bg-slate-900 text-white p-6 rounded-[2rem] shadow-xl mb-4">
             <h2 class="font-black text-xl mb-3 flex items-center gap-2 text-blue-400">
-                <span>🌐</span> 快速對話指引
+                <span>🌐</span> 全能翻譯指引
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <p class="text-[13px] font-bold text-slate-300 underline decoration-blue-500 underline-offset-4 mb-2">基本使用方法</p>
-                    <p class="text-xs opacity-90 flex items-start gap-2">
-                        <span class="bg-blue-600 text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px]">1</span>
-                        <span>點擊中間 <b>「切換按鈕」</b> 選擇是誰要開口說話。</span>
-                    </p>
-                    <p class="text-xs opacity-90 flex items-start gap-2">
-                        <span class="bg-blue-600 text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px]">2</span>
-                        <span>按下底部 <b>「黑色大鈕」</b> 錄音，結束後會自動顯示翻譯。</span>
-                    </p>
+                    <p class="text-[13px] font-bold text-slate-300 underline decoration-blue-500 underline-offset-4 mb-2">使用方法</p>
+                    <p class="text-xs opacity-90 flex items-start gap-2"><span>1. 點擊</span><b>國家名稱</b><span>可快速搜索全球語系。</span></p>
+                    <p class="text-xs opacity-90 flex items-start gap-2"><span>2. 直接輸入文字並點擊</span><b>「翻譯文字」</b><span>鈕。</span></p>
                 </div>
                 <div class="space-y-2 border-t md:border-t-0 md:border-l border-slate-700 pt-3 md:pt-0 md:pl-4">
-                    <p class="text-[13px] font-bold text-slate-300 underline decoration-blue-500 underline-offset-4 mb-2">搜索國家技巧</p>
-                    <p class="text-xs opacity-90 flex items-start gap-2">
-                        <span class="bg-emerald-600 text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px]">A</span>
-                        <span>直接點擊上方 <b>「國家名稱」</b> 即可開啟快速搜索框。</span>
-                    </p>
-                    <p class="text-xs opacity-90 flex items-start gap-2">
-                        <span class="bg-emerald-600 text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px]">B</span>
-                        <span>可輸入 <b>中文</b> 或 <b>代碼</b>（如：泰國、VN、Japan）。</span>
-                    </p>
+                    <p class="text-[13px] font-bold text-slate-300 underline decoration-blue-500 underline-offset-4 mb-2">語音對話</p>
+                    <p class="text-xs opacity-90 flex items-start gap-2"><span>A. 點擊下方身份按鈕，切換誰在說話。</span></p>
+                    <p class="text-xs opacity-90 flex items-start gap-2"><span>B. 按住底部</span><b>「大鈕」</b><span>進行錄音。</span></p>
                 </div>
             </div>
         </div>
@@ -69,7 +56,7 @@
                 </div>
                 <div class="ml-auto text-slate-300">🔍</div>
             </div>
-            <button onclick="swapLangs()" class="lg:absolute lg:left-1/2 lg:-translate-x-1/2 z-20 bg-white text-slate-400 w-12 h-12 rounded-full shadow-lg flex items-center justify-center border border-slate-50 mx-auto -my-2 lg:my-0 active:scale-90">
+            <button onclick="swapLangs()" class="lg:absolute lg:left-1/2 lg:-translate-x-1/2 z-20 bg-white text-slate-400 w-12 h-12 rounded-full shadow-lg flex items-center justify-center border border-slate-50 mx-auto -my-2 active:scale-90">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
             </button>
             <div class="big-touch-area" onclick="openSearch('target')">
@@ -84,10 +71,10 @@
         <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="glass-card flex flex-col min-h-[350px]">
                 <div class="safe-text-area flex-1">
-                    <textarea id="inputText" placeholder="選擇誰在說話，然後開始錄音..."></textarea>
+                    <textarea id="inputText" placeholder="點擊錄音，或直接在此輸入文字..."></textarea>
                 </div>
-                <div class="px-6 py-5 bg-slate-50 border-t flex items-center justify-between">
-                    <div class="flex gap-3">
+                <div class="px-6 py-5 bg-slate-50 border-t flex items-center justify-between gap-2 overflow-x-auto">
+                    <div class="flex gap-2">
                         <button onclick="switchRole('A')" id="btnA" class="quick-btn active">
                             <span>我說</span><strong id="nameA">繁體中文</strong>
                         </button>
@@ -95,18 +82,21 @@
                             <span>同事說</span><strong id="nameB">越南文</strong>
                         </button>
                     </div>
-                    <button onclick="clearAll()" class="text-slate-400 font-bold text-sm">清空</button>
+                    <div class="flex gap-2 shrink-0">
+                        <button onclick="runTranslate()" class="bg-blue-600 text-white px-4 py-3 rounded-xl font-black text-sm shadow-md active:scale-95">翻譯文字</button>
+                        <button onclick="clearAll()" class="text-slate-400 font-bold text-sm px-2">清空</button>
+                    </div>
                 </div>
             </div>
             <div id="outputCard" class="glass-card flex flex-col bg-white">
                 <div id="resultContent" class="hidden safe-text-area flex-1">
                     <div class="flex justify-between items-center mb-6">
                         <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">對照譯文</span>
-                        <button onclick="copyRes()" class="text-xs font-bold text-blue-600 underline">複製內容</button>
+                        <button onclick="copyRes()" class="text-xs font-bold text-blue-600 underline">複製</button>
                     </div>
                     <div id="outputText" class="text-slate-800 font-medium whitespace-pre-wrap"></div>
                 </div>
-                <div id="placeholder" class="flex-1 flex items-center justify-center text-slate-300 italic text-sm">Waiting...</div>
+                <div id="placeholder" class="flex-1 flex items-center justify-center text-slate-300 italic text-sm">等待輸入或語音...</div>
             </div>
         </div>
 
@@ -118,7 +108,7 @@
 
     <div id="searchModal" onclick="closeSearch(event)">
         <div class="search-container" onclick="event.stopPropagation()">
-            <input type="text" id="langSearchInput" placeholder="輸入國家名稱或縮寫..." oninput="filterLangs()">
+            <input type="text" id="langSearchInput" placeholder="搜索國家名稱..." oninput="filterLangs()">
             <div class="lang-list" id="langListContainer"></div>
         </div>
     </div>
@@ -147,46 +137,29 @@
 
         let selectedSrc = "zh-TW", selectedTarget = "vi", activeTarget = 'src', currentRole = 'A', recognition;
 
-        function openSearch(type) {
-            activeTarget = type;
-            document.getElementById('searchModal').style.display = 'block';
-            document.getElementById('langSearchInput').value = '';
-            document.getElementById('langSearchInput').focus();
-            filterLangs();
-        }
-
-        function closeSearch(e) { document.getElementById('searchModal').style.display = 'none'; }
-
+        function openSearch(type) { activeTarget = type; document.getElementById('searchModal').style.display = 'block'; filterLangs(); }
+        function closeSearch() { document.getElementById('searchModal').style.display = 'none'; }
         function filterLangs() {
-            const keyword = document.getElementById('langSearchInput').value.toLowerCase();
+            const kw = document.getElementById('langSearchInput').value.toLowerCase();
             const container = document.getElementById('langListContainer');
             container.innerHTML = '';
-            allLangs.filter(l => l.n.toLowerCase().includes(keyword) || l.v.toLowerCase().includes(keyword)).forEach(l => {
+            allLangs.filter(l => l.n.includes(kw) || l.v.includes(kw)).forEach(l => {
                 const div = document.createElement('div');
-                div.className = 'lang-item';
-                div.innerHTML = `${l.n} <span>${l.v}</span>`;
-                div.onclick = () => selectLang(l.v, l.n);
+                div.className = 'lang-item'; div.innerHTML = `${l.n} <span class="text-slate-300 text-xs">${l.v}</span>`;
+                div.onclick = () => { if(activeTarget === 'src') selectedSrc = l.v; else selectedTarget = l.v; updateUI(); closeSearch(); };
                 container.appendChild(div);
             });
         }
 
-        function selectLang(v, n) {
-            if(activeTarget === 'src') selectedSrc = v; else selectedTarget = v;
-            updateUI();
-            closeSearch();
-        }
-
         function updateUI() {
-            const nameA = allLangs.find(l => l.v === selectedSrc).n;
-            const nameB = allLangs.find(l => l.v === selectedTarget).n;
-            document.getElementById('srcDisplay').innerText = nameA;
-            document.getElementById('targetDisplay').innerText = nameB;
-            document.getElementById('nameA').innerText = nameA;
-            document.getElementById('nameB').innerText = nameB;
+            const nA = allLangs.find(l => l.v === selectedSrc).n;
+            const nB = allLangs.find(l => l.v === selectedTarget).n;
+            document.getElementById('srcDisplay').innerText = nA; document.getElementById('targetDisplay').innerText = nB;
+            document.getElementById('nameA').innerText = nA; document.getElementById('nameB').innerText = nB;
             document.getElementById('btnA').className = currentRole === 'A' ? 'quick-btn active' : 'quick-btn';
             document.getElementById('btnB').className = currentRole === 'B' ? 'quick-btn active' : 'quick-btn';
-            if(recognition) recognition.lang = (currentRole === 'A') ? selectedSrc : selectedTarget;
-            document.getElementById('voiceText').innerText = `按一下 說${currentRole === 'A' ? nameA : nameB}`;
+            if(recognition) recognition.lang = currentRole === 'A' ? selectedSrc : selectedTarget;
+            document.getElementById('voiceText').innerText = `按一下 說${currentRole === 'A' ? nA : nB}`;
         }
 
         function switchRole(role) { currentRole = role; updateUI(); }
@@ -195,22 +168,17 @@
         window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (window.SpeechRecognition) {
             recognition = new SpeechRecognition();
-            recognition.onresult = (e) => { 
-                document.getElementById('inputText').value = e.results[0][0].transcript;
-                runTranslate(); 
-            };
+            recognition.onresult = (e) => { document.getElementById('inputText').value = e.results[0][0].transcript; runTranslate(); };
             recognition.onend = () => document.getElementById('voiceBtn').classList.remove('recording-pulse');
         }
 
-        function toggleSpeech() {
-            try { recognition.start(); document.getElementById('voiceBtn').classList.add('recording-pulse'); } catch(e) { recognition.stop(); }
-        }
+        function toggleSpeech() { try { recognition.start(); document.getElementById('voiceBtn').classList.add('recording-pulse'); } catch(e) { recognition.stop(); } }
 
         async function runTranslate() {
             const txt = document.getElementById('inputText').value.trim();
             if(!txt) return;
-            const sl = (currentRole === 'A') ? selectedSrc : selectedTarget;
-            const tl = (currentRole === 'A') ? selectedTarget : selectedSrc;
+            const sl = currentRole === 'A' ? selectedSrc : selectedTarget;
+            const tl = currentRole === 'A' ? selectedTarget : selectedSrc;
             const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(txt)}`);
             const data = await res.json();
             document.getElementById('placeholder').classList.add('hidden');
