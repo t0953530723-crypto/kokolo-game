@@ -2,12 +2,29 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AI翻譯Pro">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2875/2875433.png">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f172a">
+
     <title>AI 全球溝通大師 Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --bg-soft: #f4f7f9; --text-main: #2d3748; }
-        body { -webkit-tap-highlight-color: transparent; background: var(--bg-soft); color: var(--text-main); font-family: sans-serif; padding: 1rem; }
+        body { 
+            -webkit-tap-highlight-color: transparent; 
+            background: var(--bg-soft); 
+            color: var(--text-main); 
+            font-family: sans-serif; 
+            /* 修正 iOS 瀏海遮擋與底欄安全區域 */
+            padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom) 1rem; 
+            min-height: 100vh;
+        }
         .glass-card { background: #ffffff; border-radius: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
         .big-touch-area { position: relative; display: flex; align-items: center; width: 100%; height: 85px; padding: 0 1.5rem; background: #fff; border-radius: 1.5rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #f0f0f0; }
         textarea { font-size: 1.25rem !important; line-height: 1.6; background: transparent; border: none; outline: none; width: 100%; min-height: 250px; padding: 1.5rem !important; }
@@ -23,23 +40,23 @@
         .lang-item:active { background: #f1f5f9; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col max-w-6xl mx-auto w-full">
+<body class="flex flex-col max-w-6xl mx-auto w-full">
 
-    <header class="mb-4">
+    <header class="mb-4 pt-4">
         <div class="bg-slate-900 text-white p-6 rounded-[2rem] shadow-xl">
             <h2 class="font-black text-xl mb-3 text-blue-400">📝 使用說明書 (全功能整合版)</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                 <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
                     <p class="font-bold text-blue-300 mb-1">1. 國家搜索</p>
-                    <p>點擊上方任一國家名稱，輸入中文或代碼（如: 日本、en）即可更換。</p>
+                    <p>點擊上方任一國家名稱，輸入中文或代碼即可更換。</p>
                 </div>
                 <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
                     <p class="font-bold text-blue-300 mb-1">2. 雙向對話</p>
-                    <p>下方切換「我說/同事說」，按住黑色大鈕錄音。翻譯後會<b>自動發音</b>。</p>
+                    <p>切換「我說/同事說」，按黑色大鈕錄音。翻譯後自動發音。</p>
                 </div>
                 <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
                     <p class="font-bold text-blue-300 mb-1">3. 文字與朗讀</p>
-                    <p>可直接打字按「翻譯文字」。點譯文區的「🔊」可重複聽發音。</p>
+                    <p>可直接打字按「翻譯文字」。點擊「🔊」重複聽發音。</p>
                 </div>
             </div>
         </div>
@@ -87,7 +104,7 @@
             </div>
         </div>
 
-        <button id="voiceBtn" onclick="toggleSpeech()" class="w-full bg-slate-900 text-white py-8 rounded-[2rem] font-black text-2xl shadow-2xl active:scale-95 flex items-center justify-center gap-4 mb-4">
+        <button id="voiceBtn" onclick="toggleSpeech()" class="w-full bg-slate-900 text-white py-8 rounded-[2rem] font-black text-2xl shadow-2xl active:scale-95 flex items-center justify-center gap-4 mb-8">
             <div class="w-3 h-3 bg-red-500 rounded-full"></div>
             <span id="voiceText">按一下 開始錄音</span>
         </button>
@@ -101,9 +118,8 @@
     </div>
 
     <script>
-        // 完整的 Google 翻譯語系清單 (100+)
         const allLangs = [
-            {v:"zh-TW",n:"繁體中文"},{v:"zh-CN",n:"簡體中文"},{v:"en",n:"英文"},{v:"ja",n:"日文"},{v:"ko",n:"韓文"},{v:"th",n:"泰文"},{v:"vi",n:"越南文"},{v:"id",n:"印尼文"},{v:"ms",n:"馬來文"},{v:"tl",n:"菲律賓文"},{v:"my",n:"緬甸文"},{v:"km",n:"高棉文"},{v:"lo",n:"寮國文"},{v:"hi",n:"印地文"},{v:"ar",n:"阿拉伯文"},{v:"fr",n:"法文"},{v:"de",n:"德文"},{v:"es",n:"西班牙文"},{v:"pt",n:"葡萄牙文"},{v:"ru",n:"俄文"},{v:"it",n:"義大利文"},{v:"tr",n:"土耳其文"},{v:"nl",n:"荷蘭文"},{v:"sv",n:"瑞典文"},{v:"no",n:"挪威文"},{v:"da",n:"丹麥文"},{v:"fi",n:"芬蘭文"},{v:"pl",n:"波蘭文"},{v:"uk",n:"烏克蘭文"},{v:"el",n:"希臘文"},{v:"he",n:"希伯來文"},{v:"bn",n:"孟加拉文"},{v:"pa",n:"旁遮普文"},{v:"gu",n:"古吉拉特文"},{v:"ta",n:"坦米爾文"},{v:"te",n:"泰盧固文"},{v:"kn",n:"坎那達文"},{v:"ml",n:"馬拉雅拉姆文"},{v:"si",n:"僧伽羅文"},{v:"ne",n:"尼泊爾文"},{v:"mr",n:"馬拉地文"},{v:"ur",n:"烏爾都文"},{v:"fa",n:"波斯文"},{v:"ps",n:"普什圖文"},{v:"am",n:"阿姆哈拉文"},{v:"sw",n:"斯瓦希里文"},{v:"zu",n:"祖魯文"},{v:"xh",n:"科薩文"},{v:"af",n:"南非文"},{v:"sq",n:"阿爾巴尼亞文"},{v:"hy",n:"亞美尼亞文"},{v:"az",n:"亞塞拜然文"},{v:"eu",n:"巴斯克文"},{v:"be",n:"白俄羅斯文"},{v:"bs",n:"波士尼亞文"},{v:"bg",n:"保加利亞文"},{v:"ca",n:"加泰羅尼亞文"},{v:"hr",n:"克羅埃西亞文"},{v:"cs",n:"捷克文"},{v:"et",n:"愛沙尼亞文"},{v:"gl",n:"加利西亞文"},{v:"ka",n:"喬治亞文"},{v:"hu",n:"匈牙利文"},{v:"is",n:"冰島文"},{v:"ga",n:"愛爾蘭文"},{v:"kk",n:"哈薩克文"},{v:"ky",n:"吉爾吉斯文"},{v:"lv",n:"拉脫維亞文"},{v:"lt",n:"立陶宛文"},{v:"mk",n:"馬其頓文"},{v:"mg",n:"馬達加斯加文"},{v:"mt",n:"馬爾他文"},{v:"mi",n:"毛利文"},{v:"mn",n:"蒙古文"},{v:"ro",n:"羅馬尼亞文"},{v:"sr",n:"塞爾維亞文"},{v:"sk",n:"斯洛伐克文"},{v:"sl",n:"斯洛維尼亞文"},{v:"uz",n:"烏茲別克文"},{v:"cy",n:"威爾斯文"},{v:"yi",n:"意第緒文"}
+            {v:"zh-TW",n:"繁體中文"},{v:"zh-CN",n:"簡體中文"},{v:"en",n:"英文"},{v:"ja",n:"日文"},{v:"ko",n:"韓文"},{v:"th",n:"泰文"},{v:"vi",n:"越南文"},{v:"id",n:"印尼文"},{v:"ms",n:"馬來文"},{v:"tl",n:"菲律賓文"},{v:"my",n:"緬甸文"},{v:"km",n:"高棉文"},{v:"lo",n:"寮國文"},{v:"hi",n:"印地文"},{v:"ar",n:"阿拉伯文"},{v:"fr",n:"法文"},{v:"de",n:"德文"},{v:"es",n:"西班牙文"},{v:"pt",n:"葡萄牙文"},{v:"ru",n:"俄文"},{v:"it",n:"義大利文"},{v:"tr",n:"土耳其文"},{v:"nl",n:"荷蘭文"},{v:"sv",n:"瑞典文"},{v:"no",n:"挪威文"},{v:"da",n:"丹麥文"},{v:"fi",n:"芬蘭文"},{v:"pl",n:"波蘭文"},{v:"uk",n:"烏克蘭文"},{v:"el",n:"希臘文"},{v:"he",n:"希伯來文"},{v:"bn",n:"孟加拉文"},{v:"pa",n:"旁庶普文"},{v:"gu",n:"古吉拉特文"},{v:"ta",n:"坦米爾文"},{v:"te",n:"泰盧固文"},{v:"kn",n:"坎那達文"},{v:"ml",n:"馬拉雅拉姆文"},{v:"si",n:"僧伽羅文"},{v:"ne",n:"尼泊爾文"},{v:"mr",n:"馬拉地文"},{v:"ur",n:"烏爾都文"},{v:"fa",n:"波斯文"},{v:"ps",n:"普什圖文"},{v:"am",n:"阿姆哈拉文"},{v:"sw",n:"斯瓦希里文"},{v:"zu",n:"祖魯文"},{v:"xh",n:"科薩文"},{v:"af",n:"南非文"},{v:"sq",n:"阿爾巴尼亞文"},{v:"hy",n:"亞美尼亞文"},{v:"az",n:"亞塞拜然文"},{v:"eu",n:"巴斯克文"},{v:"be",n:"白俄羅斯文"},{v:"bs",n:"波士尼亞文"},{v:"bg",n:"保加利亞文"},{v:"ca",n:"加泰羅尼亞文"},{v:"hr",n:"克羅埃西亞文"},{v:"cs",n:"捷克文"},{v:"et",n:"愛沙尼亞文"},{v:"gl",n:"加利西亞文"},{v:"ka",n:"喬治亞文"},{v:"hu",n:"匈牙利文"},{v:"is",n:"冰島文"},{v:"ga",n:"愛爾蘭文"},{v:"kk",n:"哈薩克文"},{v:"ky",n:"吉爾吉斯文"},{v:"lv",n:"拉脫維亞文"},{v:"lt",n:"立陶宛文"},{v:"mk",n:"馬其頓文"},{v:"mg",n:"馬達加斯加文"},{v:"mt",n:"馬爾他文"},{v:"mi",n:"毛利文"},{v:"mn",n:"蒙古文"},{v:"ro",n:"羅馬尼亞文"},{v:"sr",n:"塞爾維亞文"},{v:"sk",n:"斯洛伐克文"},{v:"sl",n:"斯洛維尼亞文"},{v:"uz",n:"烏茲別克文"},{v:"cy",n:"威爾斯文"},{v:"yi",n:"意第緒文"}
         ].sort((a,b) => a.n.localeCompare(b.n, 'zh-TW'));
 
         let selectedSrc="zh-TW", selectedTarget="vi", activeTarget='src', currentRole='A', recognition, lastResult="", lastTargetLang="";
