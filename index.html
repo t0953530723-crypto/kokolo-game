@@ -17,7 +17,6 @@
         .quick-btn { padding: 0.75rem 1.25rem; border-radius: 1rem; font-weight: 800; font-size: 0.9rem; transition: all 0.2s; border: 2px solid #e2e8f0; background: white; display: flex; flex-direction: column; align-items: center; min-width: 120px; }
         .quick-btn.active { background: #1e293b; color: white; border-color: #1e293b; }
         
-        /* 搜索彈窗樣式 */
         #searchModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 100; padding: 1.5rem; }
         .search-container { background: white; border-radius: 2rem; max-width: 500px; margin: 0 auto; height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
         #langSearchInput { width: 100%; padding: 1.5rem; font-size: 1.1rem; border: none; border-bottom: 1px solid #eee; outline: none; font-weight: bold; }
@@ -30,9 +29,34 @@
 <body class="min-h-screen flex flex-col max-w-7xl mx-auto w-full">
 
     <header class="w-full mb-4 px-4 pt-4">
-        <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-lg mb-4">
-            <h2 class="font-black text-lg mb-1">💡 快速溝通模式</h2>
-            <p class="text-xs opacity-80">點擊下方「國家名稱」可快速搜索全球語系</p>
+        <div class="bg-slate-900 text-white p-6 rounded-[2rem] shadow-xl mb-4">
+            <h2 class="font-black text-xl mb-3 flex items-center gap-2 text-blue-400">
+                <span>🌐</span> 快速對話指引
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <p class="text-[13px] font-bold text-slate-300 underline decoration-blue-500 underline-offset-4 mb-2">基本使用方法</p>
+                    <p class="text-xs opacity-90 flex items-start gap-2">
+                        <span class="bg-blue-600 text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px]">1</span>
+                        <span>點擊中間 <b>「切換按鈕」</b> 選擇是誰要開口說話。</span>
+                    </p>
+                    <p class="text-xs opacity-90 flex items-start gap-2">
+                        <span class="bg-blue-600 text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px]">2</span>
+                        <span>按下底部 <b>「黑色大鈕」</b> 錄音，結束後會自動顯示翻譯。</span>
+                    </p>
+                </div>
+                <div class="space-y-2 border-t md:border-t-0 md:border-l border-slate-700 pt-3 md:pt-0 md:pl-4">
+                    <p class="text-[13px] font-bold text-slate-300 underline decoration-blue-500 underline-offset-4 mb-2">搜索國家技巧</p>
+                    <p class="text-xs opacity-90 flex items-start gap-2">
+                        <span class="bg-emerald-600 text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px]">A</span>
+                        <span>直接點擊上方 <b>「國家名稱」</b> 即可開啟快速搜索框。</span>
+                    </p>
+                    <p class="text-xs opacity-90 flex items-start gap-2">
+                        <span class="bg-emerald-600 text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px]">B</span>
+                        <span>可輸入 <b>中文</b> 或 <b>代碼</b>（如：泰國、VN、Japan）。</span>
+                    </p>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -60,7 +84,7 @@
         <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="glass-card flex flex-col min-h-[350px]">
                 <div class="safe-text-area flex-1">
-                    <textarea id="inputText" placeholder="點擊下方按鈕切換身份，然後說話..."></textarea>
+                    <textarea id="inputText" placeholder="選擇誰在說話，然後開始錄音..."></textarea>
                 </div>
                 <div class="px-6 py-5 bg-slate-50 border-t flex items-center justify-between">
                     <div class="flex gap-3">
@@ -77,8 +101,8 @@
             <div id="outputCard" class="glass-card flex flex-col bg-white">
                 <div id="resultContent" class="hidden safe-text-area flex-1">
                     <div class="flex justify-between items-center mb-6">
-                        <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">翻譯對照</span>
-                        <button onclick="copyRes()" class="text-xs font-bold text-blue-600 underline">複製</button>
+                        <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">對照譯文</span>
+                        <button onclick="copyRes()" class="text-xs font-bold text-blue-600 underline">複製內容</button>
                     </div>
                     <div id="outputText" class="text-slate-800 font-medium whitespace-pre-wrap"></div>
                 </div>
@@ -94,7 +118,7 @@
 
     <div id="searchModal" onclick="closeSearch(event)">
         <div class="search-container" onclick="event.stopPropagation()">
-            <input type="text" id="langSearchInput" placeholder="輸入國家或語言 (如: 日本, vi, thai)..." oninput="filterLangs()">
+            <input type="text" id="langSearchInput" placeholder="輸入國家名稱或縮寫..." oninput="filterLangs()">
             <div class="lang-list" id="langListContainer"></div>
         </div>
     </div>
@@ -195,7 +219,7 @@
         }
 
         function clearAll() { document.getElementById('inputText').value = ""; }
-        function copyRes() { navigator.clipboard.writeText(document.getElementById('outputText').innerText); alert("複製成功"); }
+        function copyRes() { navigator.clipboard.writeText(document.getElementById('outputText').innerText); alert("已複製"); }
         updateUI();
     </script>
 </body>
