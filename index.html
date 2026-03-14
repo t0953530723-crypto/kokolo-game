@@ -3,122 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI 高精準翻譯對照</title>
+    <title>AI 純文字對照翻譯</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         body { -webkit-tap-highlight-color: transparent; background: #f9fafb; }
         .editor-container { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 1.5rem; }
-        /* 增加點擊範圍的選單樣式 */
+        
+        /* 寬大點擊區域優化 */
         .big-touch-area { 
             position: relative;
             display: flex;
             align-items: center;
             width: 100%;
-            height: 60px; /* 固定高度，增加點擊面 */
+            height: 70px; /* 進一步加大高度 */
             padding: 0 1.5rem;
             background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 1rem;
+            border: 2px solid #e5e7eb; /* 加粗邊框 */
+            border-radius: 1.25rem;
             cursor: pointer;
+            transition: border-color 0.2s;
         }
+        .big-touch-area:active { border-color: #2563eb; background: #f8faff; }
+        
         .lang-select { 
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
-            opacity: 0; /* 隱藏原生下拉，但保留點擊功能 */
+            opacity: 0; 
             cursor: pointer;
             z-index: 10;
         }
-        textarea { font-size: 16px !important; resize: none; color: #334155; }
-        .shimmer-active { background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        
+        textarea { font-size: 18px !important; resize: none; color: #1e293b; line-height: 1.6; }
+        .shimmer { background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <nav class="bg-white/80 backdrop-blur-md border-b px-6 py-4 sticky top-0 z-50 flex justify-between items-center shadow-sm">
+    <nav class="bg-white border-b px-6 py-5 sticky top-0 z-50 flex justify-between items-center shadow-sm">
         <div class="flex items-center gap-2">
-            <div class="bg-blue-600 text-white p-1.5 rounded-lg font-black text-xl">文</div>
-            <h1 class="font-bold text-slate-800 tracking-tight">精準翻譯對照</h1>
+            <div class="bg-slate-900 text-white p-1.5 rounded-lg font-black text-xl">文</div>
+            <h1 class="font-bold text-slate-800 tracking-tight text-lg">文字翻譯對照</h1>
         </div>
-        <div id="status" class="text-[10px] font-black text-blue-500 bg-blue-50 px-2 py-1 rounded">READY</div>
+        <div id="status" class="text-[10px] font-black text-slate-400 border px-2 py-1 rounded">純文字模式</div>
     </nav>
 
-    <main class="flex-1 p-4 lg:p-6 max-w-7xl mx-auto w-full flex flex-col gap-6">
+    <main class="flex-1 p-4 lg:p-8 max-w-7xl mx-auto w-full flex flex-col gap-8">
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center relative">
-            <div class="big-touch-area hover:border-blue-300 transition-colors">
+            <div class="big-touch-area">
                 <div class="flex flex-col">
-                    <span class="text-[10px] font-black text-slate-400 italic">FROM</span>
-                    <span id="srcLangDisplay" class="font-bold text-slate-700">繁體中文</span>
+                    <span class="text-[11px] font-black text-slate-400 uppercase tracking-tighter">來源語言 (From)</span>
+                    <span id="srcDisplay" class="font-extrabold text-slate-800 text-lg">繁體中文</span>
                 </div>
-                <select id="srcLang" class="lang-select" onchange="updateDisplay()"></select>
+                <select id="srcLang" class="lang-select" onchange="updateLangs()"></select>
                 <div class="ml-auto text-slate-300">▼</div>
             </div>
 
-            <button onclick="swapLangs()" class="lg:absolute lg:left-1/2 lg:-translate-x-1/2 z-20 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-all mx-auto -my-2 lg:my-0">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            <button onclick="swapLangs()" class="lg:absolute lg:left-1/2 lg:-translate-x-1/2 z-20 bg-slate-900 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-all mx-auto -my-3 lg:my-0 border-4 border-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
             </button>
 
-            <div class="big-touch-area hover:border-blue-300 transition-colors">
+            <div class="big-touch-area">
                 <div class="flex flex-col">
-                    <span class="text-[10px] font-black text-blue-400 italic">TO</span>
-                    <span id="targetLangDisplay" class="font-bold text-blue-600">繁體中文</span>
+                    <span class="text-[11px] font-black text-blue-500 uppercase tracking-tighter">目標語言 (To)</span>
+                    <span id="targetDisplay" class="font-extrabold text-blue-600 text-lg">繁體中文</span>
                 </div>
-                <select id="targetLang" class="lang-select" onchange="updateDisplay()"></select>
-                <div class="ml-auto text-blue-300">▼</div>
+                <select id="targetLang" class="lang-select" onchange="updateLangs()"></select>
+                <div class="ml-auto text-blue-400">▼</div>
             </div>
         </div>
 
         <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div id="dropZone" class="editor-container flex flex-col relative min-h-[350px] overflow-hidden border-2 border-transparent focus-within:border-blue-200">
-                <textarea id="inputText" class="flex-1 p-6 outline-none leading-relaxed" placeholder="輸入文字或點擊下方相機辨識..."></textarea>
-                
-                <div id="ocrOverlay" class="hidden absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center gap-4">
-                    <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-xs font-black text-blue-600 uppercase tracking-widest">辨識中</p>
-                </div>
-
-                <div class="p-4 bg-slate-50 border-t flex gap-3">
-                    <label for="fileInput" class="flex-1 flex items-center justify-center gap-2 bg-white border py-4 rounded-2xl cursor-pointer hover:bg-blue-50 active:bg-blue-100 transition-all shadow-sm">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"></path></svg>
-                        <span class="font-bold text-slate-600">辨識圖片</span>
-                    </label>
-                    <input type="file" id="fileInput" class="hidden" accept="image/*">
-                    
-                    <button onclick="clearAll()" class="px-6 bg-slate-200 text-slate-600 font-bold rounded-2xl active:bg-red-100 active:text-red-600 transition-all">
-                        清空
+            <div class="editor-container flex flex-col min-h-[350px] shadow-sm focus-within:ring-4 focus-within:ring-slate-100 transition-all">
+                <textarea id="inputText" class="flex-1 p-8 outline-none" placeholder="請在此輸入欲翻譯的文字內容..."></textarea>
+                <div class="p-4 bg-slate-50 border-t flex justify-end">
+                    <button onclick="clearText()" class="px-8 py-3 bg-white border border-slate-200 text-slate-500 font-black text-sm rounded-xl active:bg-red-50 active:text-red-600 transition-colors shadow-sm">
+                        清空內容
                     </button>
                 </div>
             </div>
 
-            <div id="outputCard" class="editor-container flex flex-col relative min-h-[350px] overflow-hidden bg-blue-50/5 border-blue-100">
-                <div id="transLoader" class="hidden absolute inset-0 shimmer-active z-10 opacity-50"></div>
+            <div id="outputCard" class="editor-container flex flex-col relative min-h-[350px] bg-blue-50/5 border-blue-100 overflow-hidden">
+                <div id="loader" class="hidden absolute inset-0 shimmer opacity-60 z-10"></div>
                 
-                <div id="placeholder" class="flex-1 flex flex-col items-center justify-center p-12 text-slate-300 opacity-50">
-                    <p class="text-sm font-bold uppercase tracking-widest italic">譯文對應區</p>
+                <div id="placeholder" class="flex-1 flex flex-col items-center justify-center p-12 text-slate-300">
+                    <p class="text-sm font-black uppercase tracking-widest italic opacity-40">等待翻譯結果</p>
                 </div>
 
-                <div id="resultArea" class="hidden flex-1 flex flex-col p-8 overflow-y-auto">
+                <div id="resultContent" class="hidden flex-1 flex flex-col p-8 overflow-y-auto">
                     <div class="flex justify-between items-center mb-6">
-                        <span class="text-[10px] font-black text-blue-600 bg-blue-100 px-3 py-1 rounded-full uppercase tracking-tighter">Result</span>
-                        <button onclick="copyRes()" class="text-sm font-bold text-blue-600 hover:underline">複製內容</button>
+                        <span class="text-[10px] font-black text-blue-600 bg-blue-100 px-3 py-1 rounded-full uppercase">譯文結果</span>
+                        <button onclick="copyText()" class="text-sm font-black text-blue-600 hover:underline">複製</button>
                     </div>
-                    <div id="outputText" class="text-slate-800 text-xl leading-relaxed whitespace-pre-wrap font-medium"></div>
+                    <div id="outputText" class="text-slate-800 text-xl font-medium leading-relaxed"></div>
                 </div>
             </div>
         </div>
 
-        <button id="transBtn" onclick="executeTranslation()" class="w-full bg-slate-900 text-white py-6 rounded-3xl font-black text-xl shadow-xl active:scale-[0.98] transition-all">
-            立即翻譯
+        <button id="transBtn" onclick="runTranslate()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 rounded-3xl font-black text-xl shadow-xl shadow-blue-100 active:scale-[0.98] transition-all">
+            執行翻譯
         </button>
 
     </main>
 
     <script>
-        const languages = [
+        const langs = [
             {v: "auto", n: "自動偵測 (Detect)"},
             {v: "zh-TW", n: "繁體中文"},
             {v: "zh-CN", n: "簡體中文"},
@@ -135,19 +127,19 @@
         const srcS = document.getElementById('srcLang');
         const tarS = document.getElementById('targetLang');
 
-        function init() {
-            languages.forEach(l => {
+        function setup() {
+            langs.forEach(l => {
                 srcS.add(new Option(l.n, l.v));
                 if(l.v !== 'auto') tarS.add(new Option(l.n, l.v));
             });
             srcS.value = "zh-TW";
             tarS.value = "zh-TW";
-            updateDisplay();
+            updateLangs();
         }
 
-        function updateDisplay() {
-            document.getElementById('srcLangDisplay').innerText = srcS.options[srcS.selectedIndex].text;
-            document.getElementById('targetLangDisplay').innerText = tarS.options[tarS.selectedIndex].text;
+        function updateLangs() {
+            document.getElementById('srcDisplay').innerText = srcS.options[srcS.selectedIndex].text;
+            document.getElementById('targetDisplay').innerText = tarS.options[tarS.selectedIndex].text;
         }
 
         function swapLangs() {
@@ -155,31 +147,18 @@
             const t = srcS.value;
             srcS.value = tarS.value;
             tarS.value = t;
-            updateDisplay();
+            updateLangs();
         }
 
-        document.getElementById('fileInput').addEventListener('change', async (e) => {
-            const f = e.target.files[0];
-            if(!f) return;
-            document.getElementById('ocrOverlay').classList.remove('hidden');
-            try {
-                const worker = await Tesseract.createWorker('chi_tra+chi_sim+eng+jpn+kor');
-                const { data: { text } } = await worker.recognize(f);
-                await worker.terminate();
-                document.getElementById('inputText').value = text.trim();
-            } finally {
-                document.getElementById('ocrOverlay').classList.add('hidden');
-            }
-        });
-
-        async function executeTranslation() {
+        async function runTranslate() {
             const txt = document.getElementById('inputText').value.trim();
             if(!txt) return;
 
-            const loader = document.getElementById('transLoader');
             const btn = document.getElementById('transBtn');
+            const ldr = document.getElementById('loader');
+            
             btn.disabled = true;
-            loader.classList.remove('hidden');
+            ldr.classList.remove('hidden');
 
             try {
                 const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${srcS.value}&tl=${tarS.value}&dt=t&q=${encodeURIComponent(txt)}`;
@@ -188,28 +167,30 @@
                 const result = data[0].map(i => i[0]).join('');
 
                 document.getElementById('placeholder').classList.add('hidden');
-                document.getElementById('resultArea').classList.remove('hidden');
+                document.getElementById('resultContent').classList.remove('hidden');
                 document.getElementById('outputText').innerText = result;
 
                 if(window.innerWidth < 1024) document.getElementById('outputCard').scrollIntoView({behavior: 'smooth'});
+            } catch (e) {
+                alert("翻譯引擎暫時繁忙");
             } finally {
                 btn.disabled = false;
-                loader.classList.add('hidden');
+                ldr.classList.add('hidden');
             }
         }
 
-        function clearAll() {
+        function clearText() {
             document.getElementById('inputText').value = "";
-            document.getElementById('resultArea').classList.add('hidden');
+            document.getElementById('resultContent').classList.add('hidden');
             document.getElementById('placeholder').classList.remove('hidden');
         }
 
-        function copyRes() {
+        function copyText() {
             navigator.clipboard.writeText(document.getElementById('outputText').innerText);
             alert("譯文已複製");
         }
 
-        init();
+        setup();
     </script>
 </body>
 </html>
