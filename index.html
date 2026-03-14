@@ -3,206 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>全語言 AI 翻譯對照</title>
+    <title>AI 專業對照翻譯</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
-        body { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
-        .soft-ui { background: #ffffff; border: 1px solid #f1f5f9; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.03); }
-        .btn-press:active { transform: scale(0.97); }
+        body { -webkit-tap-highlight-color: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .active-ring:focus-within { ring: 2px; ring-color: #2563eb; }
         textarea { font-size: 16px !important; }
-        select { -webkit-appearance: none; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col font-sans text-slate-900">
+<body class="bg-[#f8f9fa] min-h-screen flex flex-col font-sans">
 
-    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b p-4 flex justify-between items-center shadow-sm">
+    <header class="bg-white border-b px-4 py-3 sticky top-0 z-50 flex justify-between items-center shadow-sm">
         <div class="flex items-center gap-2">
-            <div class="w-2 h-6 bg-indigo-600 rounded-full"></div>
-            <h1 class="font-black text-slate-800">GLOBAL TRANSLATE</h1>
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5c1.383 4.512 3.533 9.043 7.17 11.851"></path></svg>
+            <span class="font-bold text-gray-700 tracking-tight">AI 翻譯對照</span>
         </div>
-        <div id="statusTag" class="text-[9px] px-2 py-1 rounded bg-slate-100 text-slate-400 font-bold tracking-widest">READY</div>
+        <div id="status" class="text-[10px] font-bold text-gray-400 border border-gray-200 px-2 py-1 rounded">READY</div>
     </header>
 
-    <main class="flex-1 p-4 max-w-2xl mx-auto w-full space-y-4">
+    <main class="flex-1 p-4 max-w-7xl mx-auto w-full flex flex-col gap-4">
         
-        <div class="soft-ui rounded-2xl p-3 flex items-center gap-3">
-            <div class="text-xs font-black text-indigo-600 px-2 uppercase italic">TO</div>
-            <select id="targetLang" class="flex-1 bg-transparent font-bold text-slate-700 outline-none text-sm cursor-pointer">
-                <optgroup label="常用語言">
-                    <option value="zh-TW">繁體中文 (Traditional Chinese)</option>
-                    <option value="zh-CN">簡體中文 (Simplified Chinese)</option>
-                    <option value="en">英文 (English)</option>
-                    <option value="ja">日文 (Japanese)</option>
-                    <option value="ko">韓文 (Korean)</option>
-                </optgroup>
-                <optgroup label="歐洲語言">
-                    <option value="fr">法文 (French)</option>
-                    <option value="de">德文 (German)</option>
-                    <option value="it">義大利文 (Italian)</option>
-                    <option value="es">西班牙文 (Spanish)</option>
-                    <option value="pt">葡萄牙文 (Portuguese)</option>
-                    <option value="ru">俄文 (Russian)</option>
-                    <option value="nl">荷蘭文 (Dutch)</option>
-                </option>
-                <optgroup label="東南亞語言">
-                    <option value="th">泰文 (Thai)</option>
-                    <option value="vi">越南文 (Vietnamese)</option>
-                    <option value="id">印尼文 (Indonesian)</option>
-                    <option value="ms">馬來文 (Malay)</option>
-                    <option value="tl">菲律賓文 (Tagalog)</option>
-                </optgroup>
-                <optgroup label="其他語言">
-                    <option value="ar">阿拉伯文 (Arabic)</option>
-                    <option value="hi">印地文 (Hindi)</option>
-                    <option value="tr">土耳其文 (Turkish)</option>
-                    <option value="el">希臘文 (Greek)</option>
-                    <option value="pl">波蘭文 (Polish)</option>
-                    <option value="sv">瑞典文 (Swedish)</option>
-                    <option value="da">丹麥文 (Danish)</option>
-                    <option value="fi">芬蘭文 (Finnish)</option>
-                    <option value="no">挪威文 (Norwegian)</option>
-                    <option value="uk">烏克蘭文 (Ukrainian)</option>
-                    <option value="he">希伯來文 (Hebrew)</option>
-                </optgroup>
-            </select>
-            <div class="h-6 w-[1px] bg-slate-200"></div>
-            <label for="fileInput" class="p-2 text-indigo-500 hover:scale-110 transition-transform cursor-pointer">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-            </label>
-            <input type="file" id="fileInput" class="hidden" accept="image/*">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-200 rounded-xl overflow-hidden shadow-sm border border-gray-200">
+            <div class="bg-white p-2 flex items-center justify-center">
+                <select id="srcLang" class="w-full text-center bg-transparent font-bold text-gray-600 outline-none text-sm cursor-pointer">
+                    <option value="auto">自動偵測語言</option>
+                    <option value="zh-TW" selected>繁體中文</option>
+                    <option value="en">英文</option>
+                    <option value="ja">日文</option>
+                    <option value="ko">韓文</option>
+                </select>
+            </div>
+            <div class="bg-white p-2 flex items-center justify-center border-t md:border-t-0 md:border-l border-gray-100">
+                <select id="targetLang" class="w-full text-center bg-transparent font-bold text-blue-600 outline-none text-sm cursor-pointer">
+                    <option value="zh-TW" selected>繁體中文</option>
+                    <option value="en">英文</option>
+                    <option value="ja">日文</option>
+                    <option value="ko">韓文</option>
+                    <option value="fr">法文</option>
+                    <option value="de">德文</option>
+                    <option value="th">泰文</option>
+                    <option value="vi">越南文</option>
+                </select>
+            </div>
         </div>
 
-        <div class="relative soft-ui rounded-3xl overflow-hidden focus-within:ring-4 focus-within:ring-indigo-100 transition-all">
-            <textarea id="inputText" class="w-full h-52 p-6 outline-none resize-none leading-relaxed text-slate-700 bg-transparent" placeholder="請輸入文字，或上傳圖片進行辨識..."></textarea>
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <div id="ocrLoader" class="hidden absolute inset-0 bg-white/95 flex flex-col items-center justify-center space-y-3 z-10">
-                <div class="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                <p class="text-xs font-black text-indigo-600 tracking-widest">ANALYZING IMAGE...</p>
+            <div id="dropZone" class="bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col relative transition-all">
+                <textarea id="inputText" class="flex-1 p-5 outline-none resize-none text-gray-800 leading-relaxed bg-transparent rounded-t-2xl min-h-[250px]" placeholder="輸入文字或拖曳圖片..."></textarea>
+                
+                <div id="ocrLoader" class="hidden absolute inset-0 bg-white/90 z-10 flex flex-col items-center justify-center space-y-2">
+                    <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-xs font-bold text-blue-600">辨識圖片中...</p>
+                </div>
+
+                <div class="p-3 bg-gray-50 flex justify-between items-center rounded-b-2xl border-t border-gray-100">
+                    <div class="flex gap-2">
+                        <label for="fileInput" class="p-2 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors" title="上傳圖片">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </label>
+                        <input type="file" id="fileInput" class="hidden" accept="image/*">
+                    </div>
+                    <button onclick="clearAll()" class="text-xs font-bold text-gray-400 hover:text-red-500 px-3 py-1">清除</button>
+                </div>
             </div>
 
-            <div class="p-4 bg-slate-50 flex justify-between items-center border-t">
-                <span id="charCount" class="text-[10px] text-slate-400 font-bold">0 CHARS</span>
-                <button onclick="clearAll()" class="text-xs font-bold text-slate-400 hover:text-red-500 transition-colors">CLEAR</button>
+            <div id="outputContainer" class="bg-white rounded-2xl shadow-sm border border-blue-100 flex flex-col relative min-h-[250px]">
+                <div id="placeholder" class="flex-1 flex flex-col items-center justify-center text-gray-300 p-10">
+                    <p class="text-sm font-medium">翻譯結果將顯示在此</p>
+                </div>
+                
+                <div id="resultContent" class="hidden flex-1 flex flex-col p-6 overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Translation</span>
+                        <button onclick="copyResult()" class="text-xs font-bold text-blue-600 hover:underline">複製內容</button>
+                    </div>
+                    <div id="outputText" class="flex-1 text-gray-800 text-lg leading-relaxed whitespace-pre-wrap"></div>
+                </div>
+
+                <div id="transLoader" class="hidden absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
+                    <div class="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                </div>
             </div>
         </div>
 
-        <button id="transBtn" onclick="doTranslate()" class="btn-press w-full bg-indigo-600 hover:bg-indigo-700 text-white py-5 rounded-2xl font-black text-lg shadow-xl shadow-indigo-100 transition-all">
-            TRANSLATE NOW
+        <button id="transBtn" onclick="handleTranslate()" class="w-full bg-blue-600 active:bg-blue-800 text-white py-5 rounded-2xl font-black text-lg shadow-xl shadow-blue-100 transition-all active:scale-[0.98]">
+            立即翻譯
         </button>
 
-        <div id="resultCard" class="hidden space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-500">
-            <div class="soft-ui rounded-3xl p-6 border-indigo-100">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase">Result</span>
-                    <button onclick="copyToClipboard()" class="text-xs font-bold text-indigo-400 hover:text-indigo-600">COPY</button>
-                </div>
-                <div id="outputText" class="text-slate-800 text-xl leading-relaxed whitespace-pre-wrap font-medium"></div>
-                
-                <div class="mt-8 pt-4 border-t border-dashed border-slate-100">
-                    <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-2">Source Reference</p>
-                    <p id="originalRef" class="text-xs text-slate-400 italic line-clamp-3 leading-loose"></p>
-                </div>
-            </div>
-        </div>
-
     </main>
-
-    <footer class="p-8 text-center">
-        <p class="text-[10px] text-slate-300 font-bold tracking-widest uppercase">Powered by Global AI Engines · 2026</p>
-    </footer>
 
     <script>
         const inputField = document.getElementById('inputText');
         const fileInput = document.getElementById('fileInput');
         const ocrLoader = document.getElementById('ocrLoader');
-        const statusTag = document.getElementById('statusTag');
+        const transLoader = document.getElementById('transLoader');
+        const status = document.getElementById('status');
 
-        // 字數統計
-        inputField.addEventListener('input', () => {
-            document.getElementById('charCount').innerText = `${inputField.value.length} CHARS`;
+        // 1. 拖曳上傳支援
+        const dropZone = document.getElementById('dropZone');
+        ['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.add('ring-2', 'ring-blue-400'), false));
+        ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.remove('ring-2', 'ring-blue-400'), false));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if(file && file.type.startsWith('image/')) processOCR(file);
         });
 
-        // 圖片辨識轉文字
-        fileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
+        fileInput.addEventListener('change', (e) => processOCR(e.target.files[0]));
+
+        // 2. OCR 處理
+        async function processOCR(file) {
             if (!file) return;
-
             ocrLoader.classList.remove('hidden');
-            statusTag.innerText = "OCR_RUNNING";
-
+            status.innerText = "OCR PROCESSING";
             try {
-                // 初始化辨識 (支援繁中、簡中、英文、日文)
                 const worker = await Tesseract.createWorker('chi_tra+chi_sim+eng+jpn');
                 const { data: { text } } = await worker.recognize(file);
                 await worker.terminate();
-                
                 inputField.value = text;
-                document.getElementById('charCount').innerText = `${text.length} CHARS`;
-                statusTag.innerText = "OCR_SUCCESS";
             } catch (err) {
-                alert("圖片辨識發生錯誤。");
-                statusTag.innerText = "OCR_ERROR";
+                alert("圖片辨識失敗");
             } finally {
                 ocrLoader.classList.add('hidden');
+                status.innerText = "READY";
             }
-        });
+        }
 
-        // 翻譯主邏輯 (使用 Google Web 免費接口)
-        async function doTranslate() {
+        // 3. 翻譯邏輯
+        async function handleTranslate() {
             const text = inputField.value.trim();
-            const target = document.getElementById('targetLang').value;
+            const sl = document.getElementById('srcLang').value;
+            const tl = document.getElementById('targetLang').value;
             const btn = document.getElementById('transBtn');
 
             if (!text) return;
 
             btn.disabled = true;
-            btn.innerText = "TRANSLATING...";
-            statusTag.innerText = "LINKING_API";
-            statusTag.className = "text-[9px] px-2 py-1 rounded bg-indigo-50 text-indigo-600 font-bold animate-pulse";
+            transLoader.classList.remove('hidden');
+            status.innerText = "TRANSLATING";
 
             try {
-                // 此處為免費 Web 接口邏輯
-                const gUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q=${encodeURIComponent(text)}`;
-                const res = await fetch(gUrl);
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
+                const res = await fetch(url);
                 const data = await res.json();
                 
-                // 組合多行翻譯結果
-                const translatedText = data[0].map(item => item[0]).join('');
+                const result = data[0].map(item => item[0]).join('');
                 
-                renderResult(translatedText, text);
-                statusTag.innerText = "COMPLETED";
-                statusTag.className = "text-[9px] px-2 py-1 rounded bg-green-50 text-green-600 font-bold";
+                document.getElementById('placeholder').classList.add('hidden');
+                document.getElementById('resultContent').classList.remove('hidden');
+                document.getElementById('outputText').innerText = result;
+                status.innerText = "SUCCESS";
             } catch (err) {
-                alert("翻譯請求失敗，請檢查網路連線。");
-                statusTag.innerText = "FAILED";
+                alert("翻譯暫時不可用");
+                status.innerText = "ERROR";
             } finally {
                 btn.disabled = false;
-                btn.innerText = "TRANSLATE NOW";
-            }
-        }
-
-        function renderResult(translated, original) {
-            document.getElementById('resultCard').classList.remove('hidden');
-            document.getElementById('outputText').innerText = translated;
-            document.getElementById('originalRef').innerText = original;
-            
-            // 手機端自動滾動
-            if (window.innerWidth < 768) {
-                document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+                transLoader.classList.add('hidden');
             }
         }
 
         function clearAll() {
             inputField.value = "";
-            document.getElementById('resultCard').classList.add('hidden');
-            document.getElementById('charCount').innerText = "0 CHARS";
-            statusTag.innerText = "READY";
+            document.getElementById('resultContent').classList.add('hidden');
+            document.getElementById('placeholder').classList.remove('hidden');
         }
 
-        function copyToClipboard() {
-            const text = document.getElementById('outputText').innerText;
-            navigator.clipboard.writeText(text).then(() => alert("翻譯結果已複製"));
+        function copyResult() {
+            navigator.clipboard.writeText(document.getElementById('outputText').innerText);
+            alert("已複製翻譯結果");
         }
     </script>
 </body>
